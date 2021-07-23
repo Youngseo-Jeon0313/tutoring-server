@@ -8,22 +8,24 @@ app.use(express.json());
 app.use(cors());
 
 app.get("/student",(req,res) => {
-    const query = req.query;
-    console.log("QUERY : ", query);
-    res.send({
-        content: [
-        {
-            "date": 20202020,
-            "pageandnum": "수능완성 123p 2번",
-            "description": "ㄴ번에 있는 전기음성도가 이해가 안가요"
-        },
-    ],
-    })
-})
+    models.content.findAll()
+        .then((result)=> {
+            console.log("CONTENTS : ", result);
+            res.send({
+               content: result,
+            })
+        }).catch((error)=> {
+            console.error(error);
+            res.send("에러 발생");
+        })
+    });
 
 app.post("/student",(req, res)=> {
     const body = req.body;
     const {imageUrl, date, pageandnum, description} = body;
+    if (!imageUrl || !date || !pageandnum || !description) {
+        res.send("모든 항목을 입력해주세요")
+    }
     models.content.create({
         imageUrl,
         date,
@@ -40,7 +42,24 @@ app.post("/student",(req, res)=> {
         res.send("상품 업로드에 문제가 발생했습니다");
     })
 });
- 
+
+app.get("/student/:id", (req, res)=> {
+    const params = req.params;
+    const {id} = params;
+    models.content.findOne({
+        where : {
+            id  : id
+        }
+    }).then((result)=>{
+        console.log("CONTENT : ", result)
+        res.send({
+            content : result
+        })
+    }).catch((error)=> {
+        console.error(error);
+        res.send("내용 조회에 에러가 발생했습니다.");
+    });
+});
 
 app.listen(port, () =>{
     console.log("서버가 돌아가고 있습니다.")
@@ -52,6 +71,3 @@ app.listen(port, () =>{
         process.exit();
     })
 });
-
-
-
