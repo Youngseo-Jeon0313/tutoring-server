@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes){
-    const content = sequelize.define('content',{
+    const contents = sequelize.define('Content',{
         imageUrl : {
             type: DataTypes.STRING(300),
             allowNull: true
@@ -17,5 +17,6 @@ module.exports = function(sequelize, DataTypes){
             allowNull: false
         },
     });
-    return content;
+    return contents;
 };
+

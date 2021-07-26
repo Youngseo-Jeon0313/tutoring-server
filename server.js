@@ -3,18 +3,31 @@ const cors = require("cors"); //
 const app = express(); //express를 app 인스턴스에 담기
 const models = require("./models");
 const port = 8080; //포트 지정하기
-
 app.use(express.json());
 app.use(cors());
 
+app.get("/question",(req,res) => {
+    models.Content.findAll({
+        order : [["createdAt","DESC"]], //정렬을 예전 순에서 최신 순으로!
+    }).then((result)=> {
+            console.log("CONTENTS : ", result); 
+            res.send({
+               contents : result,
+            })
+        }).catch((error)=> {
+            console.error(error);
+            res.send("에러 발생");
+        })
+    });
 
-app.post("/student",(req, res)=> {
+app.post("/question",(req, res)=> {
     const body = req.body;
-    const {imageUrl, date, pageandnum, description} = body;
-    if (!imageUrl || !date || !pageandnum || !description) {
+    const {id, imageUrl, date, pageandnum, description} = body;
+    if (!id || !imageUrl || !date || !pageandnum || !description) {
         res.send("모든 항목을 입력해주세요")
     }
-    models.content.create({
+    models.Content.create({
+        id,
         imageUrl,
         date,
         pageandnum,
@@ -31,12 +44,12 @@ app.post("/student",(req, res)=> {
     })
 });
 
-app.get("/student/:id", (req, res)=> {
+app.get("/question/:id", (req, res)=> {
     const params = req.params;
     const {id} = params;
-    models.content.findOne({
+    models.Content.findOne({
         where : {
-            id
+            id : id,
         }
     }).then((result)=>{
         console.log("CONTENT : ", result)
@@ -49,25 +62,16 @@ app.get("/student/:id", (req, res)=> {
     });
 });
 
-app.get("/student",(req,res) => {
-    models.content.findAll({
-        order : [["createdAt","DESC"]], //정렬을 예전 순에서 최신 순으로!
-    }).then((result)=> {
-            console.log("CONTENTS : ", result); 
-            res.send({
-               content: result,
-            })
-        }).catch((error)=> {
-            console.error(error);
-            res.send("에러 발생");
-        })
-    });
+
 
 app.listen(port, () =>{
     console.log("서버가 돌아가고 있습니다.")
-    models.sequelize.sync().then(()=>{
+    models.sequelize.
+    sync()
+    .then(()=>{
         console.log("DB 연결 성공!");
-    }).catch((err)=>{
+    })
+    .catch((err)=>{
         console.error(err);
         console.log("DB 연결 에러ㅠ");
         process.exit();
