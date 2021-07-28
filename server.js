@@ -2,7 +2,20 @@ const express = require("express"); //express 모듈 불러오기
 const cors = require("cors"); //
 const app = express(); //express를 app 인스턴스에 담기
 const models = require("./models");
+const multer = require('multer');
+const upload = multer({
+    storage: multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname);
+    },
+    }),
+});
 const port = 8080; //포트 지정하기
+
+
 app.use(express.json());
 app.use(cors());
 
@@ -44,6 +57,7 @@ app.post("/question",(req, res)=> {
     })
 });
 
+
 app.get("/question/:id", (req, res)=> {
     const params = req.params;
     const {id} = params;
@@ -62,6 +76,14 @@ app.get("/question/:id", (req, res)=> {
     });
 });
 
+app.post("/image", upload.single("image"), (req, res) => {
+    const file = req.file;
+    console.log(file);
+    res.send({
+      imageUrl: file.path,
+    });
+  });
+  
 
 
 app.listen(port, () =>{
