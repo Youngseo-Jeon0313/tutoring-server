@@ -1,7 +1,7 @@
 module.exports = function(sequelize, DataTypes){
     const contents = sequelize.define('Content',{
         imageUrl : {
-            type: DataTypes.STRING(300),
+            type: DataTypes.STRING(90000000000),
             allowNull: true
         },
         date : {

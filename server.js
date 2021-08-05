@@ -18,6 +18,7 @@ const port = 8080; //포트 지정하기
 
 app.use(express.json());
 app.use(cors());
+app.use('/uploads',express.static('uploads')) //다른 경로로 보여줘야 해!
 
 app.get("/question",(req,res) => {
     models.Content.findAll({
