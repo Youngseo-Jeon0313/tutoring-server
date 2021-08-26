@@ -5,7 +5,7 @@ const models = require("./models");
 const multer = require('multer');
 const upload = multer({
     storage: multer.diskStorage({
-    destination: function(req, file, cb) {
+    destination: function(req, file, cb) { //cb는 콜백함수인데 주로 첫번째 인자는 에러고 두 번째 인자는 가져올/읽어올 파일을 의미한다.!
         cb(null, 'uploads/');
     },
     filename: function(req, file, cb){
@@ -30,15 +30,15 @@ app.get("/question",(req,res) => {
             })
         }).catch((error)=> {
             console.error(error);
-            res.send("에러 발생");
+            res.status(400).send("에러 발생"); //400은 서버가 클라이언트 오류(잘못된 요청구문/유효하지 않은 메시지 프레이밍)를 감지해 요청 처리할 수 없을 때
         })
     });
 
-app.post("/question",(req, res)=> {
+app.post("/question",(req, res)=> { 
     const body = req.body;
     const {id, imageUrl, date, pageandnum, description} = body;
-    if (!id || !imageUrl || !date || !pageandnum || !description) {
-        res.send("모든 항목을 입력해주세요")
+    if ( !imageUrl || !date || !pageandnum || !description) {
+        res.status(400).send("모든 항목을 입력해주세요");
     }
     models.Content.create({
         id,
@@ -54,7 +54,7 @@ app.post("/question",(req, res)=> {
     })
     .catch((error)=>{
         console.log(error);
-        res.send("글 업로드에 문제가 발생했습니다");
+        res.status(400).send("글 업로드에 문제가 발생했습니다");
     })
 });
 
@@ -73,7 +73,7 @@ app.get("/question/:id", (req, res)=> {
         })
     }).catch((error)=> {
         console.error(error);
-        res.send("내용 조회에 에러가 발생했습니다.");
+        res.status(400).send("내용 조회에 에러가 발생했습니다.");
     });
 });
 
