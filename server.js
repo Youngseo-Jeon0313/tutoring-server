@@ -85,6 +85,25 @@ app.post("/image", upload.single("image"), (req, res) => {
     });
   });
   
+const todos = [
+{
+    id: 1,
+    title: "수완 3단원 다하기"
+},
+{
+    id: 2,
+    title: "모의고사 2020 6월 꺼 풀기"
+},
+{
+    id: 3,
+    title: "산화수 파란색 종이 하기"
+}
+];
+
+app.get("/todos", (req, res) => 
+    res.json(todos));
+
+
 
 
 app.listen(port, () =>{
