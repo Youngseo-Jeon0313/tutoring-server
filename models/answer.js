@@ -1,6 +1,6 @@
 module.exports = function(sequelize, DataTypes){
     const answercontents = sequelize.define('AnswerContents',{
-        imageUrl : {
+        imgUrl : {
             type: DataTypes.STRING(90000000000),
             allowNull: true
         },

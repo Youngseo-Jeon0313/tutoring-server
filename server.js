@@ -247,13 +247,13 @@ app.get("/homework/:id", (req, res)=> {
 
 app.post("/answer",(req, res)=> {  //내가 posting한 것들을 저장해주는 역할
     const body = req.body; //body에 넣어 req받은 그 body를
-    const {id, imageUrl, httpnum, description} = body; //그 body들은 각각 이렇게 나눌 수 있지 (body는 통용적으로 쓰이는 말인 듯)
-    if ( !imageUrl || !httpnum || !description) {
+    const {id, imgUrl, httpnum, description} = body; //그 body들은 각각 이렇게 나눌 수 있지 (body는 통용적으로 쓰이는 말인 듯)
+    if ( !imgUrl || !httpnum || !description) {
         res.status(400).send("모든 항목을 입력해주세요");
     } //하나라도 빠지지 않도록 써주는 말들
     models.AnswerContents.create({ //이때 models에다가 만들어준 내용들을 하나씩 가져옴 (모델은 그러라고 있는 거야)
         id,
-        imageUrl,
+        imgUrl,
         httpnum,
         description
     }).then((result)=>{
@@ -270,22 +270,23 @@ app.post("/answer",(req, res)=> {  //내가 posting한 것들을 저장해주는
 
 
 
-app.post("/answerimage", answerupload.single("image"), (req, res) => {
+app.post("/answerimage", answerupload.single("img"), (req, res) => {
     const file = req.file; //req에서 받은 file을 file로 지정해주고
     console.log(file); 
     res.send({  //보내 그걸
-      imageUrl: file.path,
+      imgUrl: file.path,
     });
   });
 
 
 app.get("/answer",(req,res) => {
     models.AnswerContents.findAll({   //여기서는 하나하나 정보들 다 가져와야 하니까!
-        order : [["createdAt","DESC"]], //정렬을 예전 순에서 최신 순으로!
+        order : [["createdAt","DESC"]],
+        //정렬을 예전 순에서 최신 순으로!
     }).then((result)=> {
             console.log("ANSWERCONTENTS : ", result); 
             res.send({
-               contents : result,
+               answercontents : result,
             })
         }).catch((error)=> {
             console.error(error);
@@ -293,7 +294,28 @@ app.get("/answer",(req,res) => {
         })
     });
 
-    
+        
+app.get("/answer/:httpnum", (req, res)=> {
+    const params = req.params; //파라미터는 '외부로부터 투입되는 데이터'라고 여기서 해석하면 될 듯
+    const {httpnum} = params;
+    models.AnswerContents.findOne({ //여기서는 정보 하나, 즉 내가 올린 것들 하나하나 떼어서 가져오기
+        order: [['id', 'DESC']],
+        limit : 1,
+        where : {
+            httpnum: httpnum,  //그때 기준은 id 값!
+        },
+    }).then((result)=>{  //promise가 잘 됐으면 then~ 이렇게 가져와
+        console.log("ANSWERCONTENT : ", result)
+        res.send({
+            answercontents : result //result는 이 때 content에서 받아온 것들!
+        })
+    }).catch((error)=> { //reject된 경우에는 이렇게 에러가 발생 ㅠㅠ
+        console.error(error);
+        res.status(400).send("내용 조회에 에러가 발생했습니다.");
+    });
+});
+
+
 app.listen(port, () =>{
     console.log("서버가 돌아가고 있습니다.")
     models.sequelize.
